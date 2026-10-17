@@ -21,7 +21,7 @@ from safetensors.torch import load_file
 from .speaker_embedding import EMBEDDING_DIM as SPEAKER_EMBEDDING_DIM
 from .speaker_embedding import SAMPLE_RATE
 
-WHISPER_MODEL = "openai/whisper-large-v3"
+WHISPER_MODEL = "openai/whisper-tiny"
 
 
 def load_speaker_head(hidden, checkpoint_dir, device, dtype,
@@ -161,5 +161,4 @@ class ReferenceTranscriber:
     def __call__(self, wav_path):
         import librosa
         wav, sample_rate = librosa.load(str(wav_path), sr=16000, mono=True)
-        del sample_rate
-        return self._load()(wav, generate_kwargs={"language": "en"})["text"].strip()
+        return self._load()(wav)["text"].strip()

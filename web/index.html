@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KittenTTS Studio — Texto a Voz y Clonación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="ambient-glow glow-1"></div>
+        <div class="ambient-glow glow-2"></div>
+        <div class="ambient-glow glow-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="studio-header">
+            <div class="brand">
+                <div class="logo-badge">
+                    <span class="logo-icon">🐱🎙️</span>
+                </div>
+                <div>
+                    <h1 class="brand-title">KittenTTS <span class="gradient-text">Studio</span></h1>
+                    <p class="brand-subtitle">Síntesis neuronal de voz, clonación zero-shot y modulación emocional</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span id="backendStatus">Motor listo</span>
+            </div>
+        </header>
+
+        <!-- Navegación por pestañas -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tts" id="tabBtnTts">
+                <span class="tab-icon">✨</span>
+                <span>Síntesis de Voz</span>
+            </button>
+            <button class="tab-btn" data-tab="cloning" id="tabBtnCloning">
+                <span class="tab-icon">🧬</span>
+                <span>Clonación de Voz</span>
+            </button>
+            <button class="tab-btn" data-tab="history" id="tabBtnHistory">
+                <span class="tab-icon">🕒</span>
+                <span>Historial de Audios</span>
+            </button>
+        </nav>
+
+        <!-- Contenido principal -->
+        <main class="studio-content">
+            <!-- PESTAÑA 1: SÍNTESIS DE VOZ -->
+            <section id="tab-tts" class="tab-panel active">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2>Configuración de la Voz</h2>
+                    </div>
+
+                    <div class="grid-controls">
+                        <!-- Selector de Modelo -->
+                        <div class="form-group">
+                            <label for="modelSelect">Familia de Modelo:</label>
+                            <select id="modelSelect" class="styled-select">
+                                <option value="onnx" selected>⚡ Ultrarrápido ONNX (1 a 2 segundos en CPU - Recomendado)</option>
+                                <option value="kitten2">🧠 KittenTTS 2 (1.7B - Multilingüe/Emociones - ~1-2 min en CPU)</option>
+                            </select>
+                            <small id="modelHelpText" style="color: var(--accent); margin-top: 0.2rem;">
+                                ⚡ Modo ultra-veloz seleccionado: generará tu audio en 1 a 2 segundos directamente en tu procesador.
+                            </small>
+                        </div>
+
+                        <!-- Selector de Voz -->
+                        <div class="form-group">
+                            <label for="voiceSelect">Voz del Hablante:</label>
+                            <select id="voiceSelect" class="styled-select">
+                                <!-- Llenado dinámicamente con JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- Preset (KittenTTS 2) -->
+                        <div class="form-group" id="presetGroup">
+                            <label for="presetSelect">Estilo de Decodificación:</label>
+                            <select id="presetSelect" class="styled-select">
+                                <option value="stable" selected>Estable (Claro y uniforme)</option>
+                                <option value="expressive">Expresivo (Mayor entonación y modulación)</option>
+                            </select>
+                        </div>
+
+                        <!-- Velocidad (ONNX) -->
+                        <div class="form-group" id="speedGroup" style="display: none;">
+                            <label for="speedRange">Velocidad: <span id="speedVal" class="badge">1.0x</span></label>
+                            <input type="range" id="speedRange" min="0.5" max="2.0" step="0.1" value="1.0" class="styled-range">
+                        </div>
+                    </div>
+
+                    <!-- Botones de Expresiones rápidas (KittenTTS 2) -->
+                    <div id="expressionToolbar" class="expression-toolbar">
+                        <div class="toolbar-section">
+                            <span class="toolbar-label">Emociones:</span>
+                            <div class="chips-container" id="emotionsContainer">
+                                <!-- Chips insertados dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="toolbar-section">
+                            <span class="toolbar-label">Efectos vocales:</span>
+                            <div class="chips-container" id="eventsContainer">
+                                <!-- Chips insertados dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área de Texto -->
+                    <div class="form-group text-area-group">
+                        <div class="label-row">
+                            <label for="ttsTextInput">Texto a sintetizar:</label>
+                            <div class="example-buttons">
+                                <button type="button" class="btn-text-sm" id="btnEjemploEs">Español</button>
+                                <button type="button" class="btn-text-sm" id="btnEjemploEmocion">Con Emoción</button>
+                                <button type="button" class="btn-text-sm" id="btnEjemploEn">English</button>
+                            </div>
+                        </div>
+                        <textarea id="ttsTextInput" class="styled-textarea" rows="4" placeholder="Escribe aquí el texto que deseas convertir en voz..."></textarea>
+                    </div>
+
+                    <!-- Acción -->
+                    <div class="action-footer">
+                        <button id="btnGenerate" class="btn-primary">
+                            <span class="btn-icon">⚡</span>
+                            <span class="btn-text">Generar Audio</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA 2: CLONACIÓN DE VOZ -->
+            <section id="tab-cloning" class="tab-panel">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2>Clonación Zero-Shot (In-Context Voice Cloning)</h2>
+                        <p class="card-desc">Sube un audio de 5 a 30 segundos de cualquier persona o grábate directamente con tu micrófono. KittenTTS hablará con esa voz sin entrenamiento previo.</p>
+                    </div>
+
+                    <div class="cloning-grid">
+                        <!-- Grabador / Subidor -->
+                        <div class="clone-source-card">
+                            <h3>1. Audio de Referencia</h3>
+                            
+                            <div class="record-controls">
+                                <button type="button" id="btnRecordMic" class="btn-record">
+                                    <span class="mic-dot"></span>
+                                    <span id="recordLabel">Grabar con Micrófono</span>
+                                </button>
+                                <span id="recordTimer" class="record-timer">00:00</span>
+                            </div>
+
+                            <div class="or-divider"><span>O sube un archivo</span></div>
+
+                            <div class="drop-zone" id="dropZone">
+                                <input type="file" id="audioFileInput" accept="audio/*" class="file-input">
+                                <div class="drop-zone-content">
+                                    <span class="drop-icon">📁</span>
+                                    <p id="fileNameLabel">Arrastra aquí un audio (.wav o .mp3) o <strong>haz clic para buscar</strong></p>
+                                    <small>Recomendado: 5 a 20 segundos de voz clara</small>
+                                </div>
+                            </div>
+
+                            <div id="previewSourceContainer" style="display: none;" class="audio-source-preview">
+                                <span>Audio de referencia cargado:</span>
+                                <audio id="previewSourceAudio" controls class="mini-player"></audio>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="referenceTextInput">¿Qué dijiste en tu grabación? (¡Recomendado!):</label>
+                                <input type="text" id="referenceTextInput" class="styled-input" placeholder="Ej: Hola, esta es una prueba con mi voz">
+                                <small style="color: #38bdf8; margin-top: 0.35rem; line-height: 1.4;">
+                                    ⚡ <strong>Para clonar rápido:</strong> Si escribes aquí las palabras que dijiste al grabar, el sistema <strong>no tiene que transcribir el audio</strong> y clona tu voz de inmediato sin esperas.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Texto a sintetizar con la voz clonada -->
+                        <div class="clone-target-card">
+                            <h3>2. Texto para la Voz Clonada</h3>
+                            <div class="form-group text-area-group">
+                                <label for="cloneTextInput">¿Qué debe decir la voz clonada?:</label>
+                                <textarea id="cloneTextInput" class="styled-textarea" rows="6" placeholder="Escribe aquí el guión que la voz clonada dirá..."></textarea>
+                            </div>
+
+                            <button id="btnClone" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                                <span class="btn-icon">🧬</span>
+                                <span class="btn-text">Clonar y Generar Voz</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA 3: HISTORIAL -->
+            <section id="tab-history" class="tab-panel">
+                <div class="card glass-card">
+                    <div class="card-header flex-between">
+                        <h2>Historial de Audios Generados</h2>
+                        <button id="btnClearHistory" class="btn-text-sm">Limpiar historial</button>
+                    </div>
+                    <div id="historyList" class="history-list">
+                        <!-- Elementos del historial -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- REPRODUCTOR PRINCIPAL FIJO / DESTACADO -->
+        <section id="playerCard" class="card player-card glass-card" style="display: none;">
+            <div class="player-content">
+                <div class="player-info">
+                    <div class="player-badge-row">
+                        <span id="playerModelBadge" class="tag-badge">KittenTTS 2</span>
+                        <span id="playerVoiceBadge" class="tag-badge voice-tag">Bruno</span>
+                        <span id="playerTimeBadge" class="tag-badge time-tag">⚡ 2.4s</span>
+                    </div>
+                    <p id="playerTextPreview" class="player-text">"Texto generado..."</p>
+                </div>
+
+                <!-- Visualizador Canvas -->
+                <div class="visualizer-wrapper">
+                    <canvas id="waveformCanvas" width="600" height="48"></canvas>
+                </div>
+
+                <!-- Controles de Audio -->
+                <div class="audio-controls-row">
+                    <button id="btnPlayPause" class="btn-play-circle">
+                        <span id="playIcon">▶</span>
+                    </button>
+
+                    <div class="progress-bar-container" id="progressBarContainer">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+
+                    <span id="audioTimeLabel" class="time-label">0:00 / 0:00</span>
+
+                    <a id="btnDownload" href="#" download="kittentts_audio.wav" class="btn-icon-action" title="Descargar WAV">
+                        ⬇️
+                    </a>
+                </div>
+            </div>
+            <audio id="mainAudio"></audio>
+        </section>
+
+        <!-- Modal de Carga / Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-box glass-card">
+                <div class="spinner"></div>
+                <h3 id="loadingTitle">Generando voz...</h3>
+                <p id="loadingSubtitle">El modelo neuronal está procesando los fonemas en CPU</p>
+                <div class="timer-counter">Tiempo transcurrido: <span id="elapsedSeconds">0</span>s</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
